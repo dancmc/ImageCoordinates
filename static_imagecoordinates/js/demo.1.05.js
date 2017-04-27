@@ -9,6 +9,7 @@ function showError(text) {
 var drag = false;
 var rect = {};
 var moved = false;
+var moveNum = 0;
 
 
 $("#submit_multi").click(function () {
@@ -81,8 +82,10 @@ $("#submit_multi").click(function () {
                         top = rect.startY + rect.h;
                     }
 
+                    console.log(moved)
                     var inverse = 1 / scale;
                     if (moved) {
+
                         coords.append("(" + parseInt(left * inverse) + "," + parseInt(top * inverse) + "," + parseInt(right * inverse) + "," + parseInt(bottom * inverse) + ")</br>");
 
                         var textarea1 = $('<textarea/>');
@@ -91,7 +94,10 @@ $("#submit_multi").click(function () {
                         textarea1[0].select();
                         document.execCommand("copy");
                         textarea1.remove();
-                    } else {
+                    }
+
+                    if (!moved) {
+
                         var pixel = ctx.getImageData(rect.startX, rect.startY, 1, 1).data;
                         color.append("(" + pixel[0] + "," + pixel[1] + "," + pixel[2] + ")</br>");
 
@@ -119,6 +125,7 @@ $("#submit_multi").click(function () {
         });
 
         function mouseDown(e, canvas) {
+            moveNum = 0;
             rect.startX = e.pageX - canvas.parentElement.offsetLeft;
             rect.startY = e.pageY - canvas.parentElement.offsetTop;
             drag = true;
@@ -132,7 +139,10 @@ $("#submit_multi").click(function () {
 
         function mouseMove(e, ctx, canvas) {
             if (drag) {
-                moved = true;
+                moveNum++;
+                if (moveNum > 1) {
+                    moved = true;
+                }
                 rect.w = (e.pageX - canvas.parentElement.offsetLeft) - rect.startX;
 
                 rect.h = (e.pageY - canvas.parentElement.offsetTop) - rect.startY;
